@@ -1,92 +1,118 @@
-# MVP web de trazabilidad de productos de grifería
+# Sistema Web de Trazabilidad de Productos de Grifería
 
-Aplicación local con frontend HTML/CSS/JavaScript y backend Python + Flask. La paleta usa los colores corporativos solicitados:
+Aplicación web en desarrollo para facilitar la consulta y el seguimiento del recorrido logístico de productos de grifería dentro de un centro de distribución. El proyecto utiliza Python y Flask para el procesamiento de información, junto con HTML, CSS y JavaScript para la interfaz de usuario.
 
-- Azul oscuro: `#213C65`
-- Azul claro: `#3ABAEC`
+La solución busca organizar los eventos logísticos disponibles y facilitar la consulta de referencias de producto, ubicaciones, fechas, fuentes de información y novedades, tomando como fuentes complementarias los registros de WMS y SAP.
 
-## Requisitos
+> **Estado del proyecto:** prototipo de trabajo en desarrollo. La aplicación utiliza registros demostrativos y permite importar archivos manualmente. No cuenta con integración directa confirmada con WMS ni SAP.
 
-- Python 3.10 o superior (recomendado).
-- Visual Studio Code.
-- Conexión a internet para instalar dependencias y, opcionalmente, cargar las fuentes tipográficas de Google Fonts.
+---
 
-## Abrir y ejecutar en VS Code
+## Tabla de contenido
 
-1. Descomprime `trazabilidad_griferia_flask.zip`.
-2. En Visual Studio Code elige **Archivo > Abrir carpeta** y abre `trazabilidad_griferia_flask`.
-3. Abre una terminal integrada (**Terminal > Nueva terminal**).
-4. Crea y activa un entorno virtual.
+1. [Descripción del proyecto](#descripción-del-proyecto)
+2. [Objetivos](#objetivos)
+3. [Alcance funcional](#alcance-funcional)
+4. [Tecnologías utilizadas](#tecnologías-utilizadas)
+5. [Arquitectura del proyecto](#arquitectura-del-proyecto)
+6. [Requisitos previos](#requisitos-previos)
+7. [Instalación y configuración](#instalación-y-configuración)
+8. [Ejecución de la aplicación](#ejecución-de-la-aplicación)
+9. [Uso de la aplicación](#uso-de-la-aplicación)
+10. [Formato de los archivos de entrada](#formato-de-los-archivos-de-entrada)
+11. [Flujo general de funcionamiento](#flujo-general-de-funcionamiento)
+12. [Identidad visual](#identidad-visual)
+13. [Despliegue](#despliegue)
+14. [Limitaciones conocidas](#limitaciones-conocidas)
+15. [Próximas mejoras](#próximas-mejoras)
+16. [Seguridad y manejo de datos](#seguridad-y-manejo-de-datos)
+17. [Autoría y contexto del proyecto](#autoría-y-contexto-del-proyecto)
 
-### Windows PowerShell
+---
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python app.py
-```
+## Descripción del proyecto
 
-Si PowerShell bloquea la activación, puedes abrir CMD y ejecutar:
+En los procesos logísticos, la información relacionada con un producto puede encontrarse distribuida en diferentes registros y sistemas. Consultar su recorrido requiere identificar la referencia del producto y relacionarla con los eventos disponibles durante las etapas de recepción, almacenamiento, traslado, preparación y despacho.
 
-```bat
-py -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install -r requirements.txt
-python app.py
-```
+Este proyecto propone una aplicación web que centraliza la consulta de los registros disponibles para facilitar la comprensión del recorrido logístico de cada referencia de grifería.
 
-### macOS / Linux
+La solución considera WMS y SAP como fuentes complementarias de información. Su propósito principal es facilitar la trazabilidad, no realizar una conciliación general de inventario ni modificar los registros de los sistemas empresariales.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python app.py
-```
+La aplicación se encuentra en una etapa inicial de desarrollo y constituye una base para continuar la implementación, validar los requerimientos y evaluar su utilidad con información autorizada.
 
-5. Abre `http://127.0.0.1:5000` en el navegador.
-6. Para detener el servidor, vuelve a la terminal y presiona `Ctrl+C`.
+## Objetivos
 
-## Estructura
+### Objetivo general
+
+Desarrollar progresivamente un sistema web que facilite la consulta del recorrido logístico de productos de grifería a partir de los eventos disponibles, permitiendo visualizar su secuencia, las ubicaciones registradas y las novedades que requieren revisión.
+
+### Objetivos específicos
+
+- Facilitar la búsqueda de productos mediante su referencia y un identificador adicional cuando esté disponible.
+- Organizar cronológicamente los eventos asociados a cada referencia de producto.
+- Presentar la información disponible de WMS y SAP, diferenciando la fuente de cada registro.
+- Identificar novedades y datos incompletos que puedan limitar la reconstrucción del recorrido.
+- Permitir la importación manual de archivos CSV y Excel para realizar consultas con los registros disponibles.
+- Establecer una base técnica para realizar pruebas, ajustar el prototipo y evaluar futuras mejoras.
+
+## Alcance funcional
+
+La versión de trabajo contempla las siguientes funcionalidades:
+
+- Panel de resumen con información de los registros cargados.
+- Búsqueda de productos por referencia o identificador adicional.
+- Visualización cronológica de eventos logísticos.
+- Consulta de fechas, ubicaciones, descripciones y fuentes cuando esos campos estén disponibles.
+- Presentación de novedades para orientar la revisión del personal responsable.
+- Importación manual de archivos CSV y Excel.
+- Identificación de registros con información incompleta.
+- Presentación de la fecha y hora de la última carga de información.
+- Interfaz adaptable a diferentes tamaños de pantalla.
+
+Las funcionalidades deberán validarse con archivos autorizados y pruebas documentadas antes de considerar que cumplen con todos los requerimientos operativos.
+
+## Tecnologías utilizadas
+
+| Tecnología | Uso dentro del proyecto |
+|---|---|
+| Python | Lenguaje utilizado para procesar los registros y ejecutar la lógica del servidor. |
+| Flask | Framework utilizado para construir el backend de la aplicación web. |
+| HTML | Estructura de las páginas de la interfaz. |
+| CSS | Estilos, distribución de componentes y adaptación visual. |
+| JavaScript | Interacciones de la interfaz y comunicación con el backend. |
+| Pandas | Procesamiento y organización de datos tabulares. |
+| Openpyxl | Lectura de archivos Excel en formato XLSX. |
+| Git | Control de versiones del código fuente. |
+| GitHub | Repositorio para almacenar y administrar el código del proyecto. |
+| Gunicorn | Servidor WSGI considerado para ejecutar Flask en un entorno de despliegue compatible. |
+| Render | Plataforma considerada para publicar la aplicación web. |
+
+## Arquitectura del proyecto
+
+La aplicación separa la interfaz de usuario del procesamiento de los datos.
+
+- **Frontend:** presenta las pantallas, los formularios y los resultados de las consultas.
+- **Backend:** procesa las solicitudes, interpreta los archivos cargados y organiza los registros.
+- **Fuentes de datos:** archivos CSV o Excel suministrados manualmente. WMS y SAP todavía no están conectados directamente.
+- **Repositorio:** GitHub conserva los archivos fuente y permite gestionar las modificaciones.
+- **Despliegue:** Render puede utilizarse para ejecutar la aplicación en internet una vez configurado y verificado el servicio.
+
+### Estructura de carpetas
 
 ```text
 trazabilidad_griferia_flask/
+│
 ├── app.py
 ├── requirements.txt
 ├── README.md
+├── plantilla_trazabilidad.csv
+│
 ├── templates/
 │   └── index.html
+│
 └── static/
     ├── css/
     │   └── styles.css
+    │
     └── js/
         └── app.js
-```
-
-## Funcionalidad incluida
-
-- Panel de resumen con referencias, eventos, novedades y origen de la carga.
-- Búsqueda de productos por referencia o identificador adicional.
-- Historial cronológico con fechas, ubicaciones, fuente y novedades.
-- Vista de novedades para revisión de personal autorizado.
-- Importación de CSV, XLSX o XLS en memoria en el servidor local.
-- Avisos para eventos sin fecha, ubicación o descripción.
-- Descarga de plantilla CSV.
-- Diseño adaptable a móviles.
-
-## Columnas sugeridas para los archivos
-
-`referencia`, `fecha_hora`, `evento`, `ubicacion`, `sistema`, `identificador`, `novedad`.
-
-La columna `referencia` es obligatoria. El importador reconoce también ciertos nombres equivalentes en inglés y español. No debe confundirse el código de ubicación con la referencia del producto. Si el archivo no contiene eventos, fechas o ubicaciones, el recorrido será parcial y aparecerán avisos.
-
-## Límites importantes del MVP
-
-- Los registros iniciales son ficticios y se usan solo para mostrar la interfaz.
-- La aplicación no está conectada a los sistemas reales WMS ni SAP.
-- Importar un archivo es una carga manual; no equivale a sincronización en tiempo real.
-- Los datos importados se conservan solo en memoria y se reinician al reiniciar el servidor. Este proyecto no incorpora base de datos ni autenticación.
-- No se han definido umbrales de retraso ni una regla automática que determine retrasos; deben validarse con el área operativa.
-- La aplicación muestra novedades, pero no registra validaciones físicas ni cantidades comprobadas.
-- `debug=True` está pensado exclusivamente para desarrollo local. Antes de un despliegue real se requiere seguridad, autenticación, persistencia, controles de acceso, pruebas y aprobación técnica.
