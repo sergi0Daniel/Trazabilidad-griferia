@@ -1,108 +1,1576 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="MVP para consultar la trazabilidad de productos de grifería a partir de registros cargados.">
-  <title>Trazabilidad de grifería | MVP</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="TRAZA+ - Sistema de trazabilidad logística de productos de grifería."
+    >
+
+    <title>TRAZA+ | Trazabilidad de productos</title>
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/styles.css') }}"
+    >
+
+    <!-- JavaScript -->
+    <script
+        src="{{ url_for('static', filename='js/app.js') }}"
+        defer
+    ></script>
+
 </head>
+
 <body>
-  <div class="app-shell">
+
+<div class="app-shell">
+
+    <!-- ================================================= -->
+    <!-- MENÚ LATERAL -->
+    <!-- ================================================= -->
+
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div><strong>TRAZA<span>+</span></strong><small>Centro de distribución</small></div>
-      </div>
-      <div class="workspace-label">ESPACIO DE TRABAJO</div>
-      <nav class="main-nav" aria-label="Navegación principal">
-        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">▦</span><span>Resumen</span></button>
-        <button class="nav-item" data-page="trace"><span class="nav-icon">⌕</span><span>Trazabilidad</span></button>
-        <button class="nav-item" data-page="novelties"><span class="nav-icon">⚑</span><span>Novedades</span><span class="nav-count" id="navNoveltyCount">0</span></button>
-        <button class="nav-item" data-page="sources"><span class="nav-icon">⇧</span><span>Fuentes WMS / SAP</span></button>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="side-note-icon">i</div>
-        <div><strong>Prototipo de trabajo</strong><p>La información mostrada depende de los archivos cargados.</p></div>
-      </div>
-      <div class="sidebar-footer"><span class="status-dot"></span> Entorno local · MVP</div>
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div>
+                <strong>TRAZA<span>+</span></strong>
+                <small>Centro de distribución</small>
+            </div>
+
+        </div>
+
+        <div class="workspace-label">
+            ESPACIO DE TRABAJO
+        </div>
+
+        <nav class="main-nav" aria-label="Navegación principal">
+
+            <button
+                class="nav-item active"
+                data-page="dashboard"
+            >
+                <span class="nav-icon">▦</span>
+                <span>Resumen general</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="trace"
+            >
+                <span class="nav-icon">⌕</span>
+                <span>Trazabilidad</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="novelties"
+            >
+                <span class="nav-icon">⚑</span>
+                <span>Novedades</span>
+                <span class="nav-count" id="navNoveltyCount">0</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="sources"
+            >
+                <span class="nav-icon">⇄</span>
+                <span>Conexiones WMS / SAP</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="side-note-icon">i</div>
+
+            <div>
+                <strong>Seguimiento logístico</strong>
+
+                <p>
+                    Consulta los movimientos registrados
+                    de los productos de grifería.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-footer">
+
+            <span class="status-dot"></span>
+
+            <span>TRAZA+ · MVP</span>
+
+        </div>
+
     </aside>
 
+
+    <!-- ================================================= -->
+    <!-- CONTENIDO PRINCIPAL -->
+    <!-- ================================================= -->
+
     <main class="main-content">
-      <header class="topbar">
-        <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menú">☰</button>
-        <div class="breadcrumb">Operaciones <span>/</span> <strong id="breadcrumbCurrent">Resumen</strong></div>
-        <div class="topbar-right"><span class="environment-pill"><span class="status-dot"></span> Datos de demostración</span><div class="avatar">TG</div></div>
-      </header>
 
-      <section class="page active-page" id="page-dashboard">
-        <div class="page-heading heading-row">
-          <div><div class="eyebrow">VISIÓN GENERAL</div><h1>Resumen de trazabilidad</h1><p>Consulta el recorrido registrado de las referencias de grifería dentro del centro de distribución.</p></div>
-          <button class="button button-primary" data-goto="trace"><span>⌕</span> Consultar producto</button>
-        </div>
-        <div class="notice-banner" id="demoBanner"><span class="notice-symbol">i</span><div><strong>Datos demostrativos ficticios</strong><p>Esta página aún no está conectada a WMS ni SAP. Importa un archivo autorizado para consultar sus registros.</p></div><button class="text-button" data-goto="sources">Importar datos <span>→</span></button></div>
-        <div class="metric-grid">
-          <article class="metric-card"><div class="metric-top"><span>Referencias consultables</span><span class="metric-icon icon-blue">⌗</span></div><div class="metric-number" id="metricReferences">—</div><div class="metric-foot">Referencias distintas en la carga actual</div></article>
-          <article class="metric-card"><div class="metric-top"><span>Eventos registrados</span><span class="metric-icon icon-cyan">↗</span></div><div class="metric-number" id="metricEvents">—</div><div class="metric-foot">Movimientos incluidos en los archivos</div></article>
-          <article class="metric-card"><div class="metric-top"><span>Novedades visibles</span><span class="metric-icon icon-amber">⚑</span></div><div class="metric-number" id="metricNovelties">—</div><div class="metric-foot">Requieren revisión del personal responsable</div></article>
-          <article class="metric-card"><div class="metric-top"><span>Fuentes reconocidas</span><span class="metric-icon icon-navy">▤</span></div><div class="metric-number" id="metricSources">—</div><div class="metric-foot">Registros identificados como WMS o SAP</div></article>
-        </div>
-        <div class="content-grid main-grid">
-          <section class="panel recent-panel">
-            <div class="panel-heading"><div><h2>Referencias consultables</h2><p>Selecciona una referencia para abrir su recorrido.</p></div><button class="link-button" data-goto="trace">Ver trazabilidad <span>→</span></button></div>
-            <div class="table-wrap"><table><thead><tr><th>Referencia de producto</th><th>Última ubicación registrada</th><th>Eventos</th><th>Último evento</th><th></th></tr></thead><tbody id="referencesTable"><tr><td colspan="5" class="table-empty">Cargando registros…</td></tr></tbody></table></div>
-            <div class="panel-foot"><span id="referenceTableCount">0 referencias</span><span class="subtle-text">Solo se muestran datos cargados</span></div>
-          </section>
-          <section class="panel source-panel">
-            <div class="panel-heading"><div><h2>Fuentes de información</h2><p>Origen identificado en los registros</p></div><span class="small-label">Carga actual</span></div>
-            <div class="source-row"><div class="source-brand wms-brand">W</div><div class="source-description"><strong>WMS</strong><small>Eventos asociados a WMS</small></div><strong class="source-value" id="sourceWmsCount">0</strong></div>
-            <div class="source-row"><div class="source-brand sap-brand">S</div><div class="source-description"><strong>SAP</strong><small>Eventos asociados a SAP</small></div><strong class="source-value" id="sourceSapCount">0</strong></div>
-            <div class="source-callout"><span>ⓘ</span><p>WMS y SAP se presentan como fuentes complementarias. No hay sincronización automática activa en este MVP.</p></div>
-            <button class="button button-outline full-width" data-goto="sources">Gestionar archivos</button>
-          </section>
-        </div>
-        <section class="panel bottom-search-panel"><div class="search-copy"><div class="eyebrow">ACCESO RÁPIDO</div><h2>¿Buscas una referencia?</h2><p>Ingresa una referencia de producto o un identificador disponible en tus registros.</p></div><form class="quick-search search-form"><label class="search-input-wrap"><span>⌕</span><input name="q" placeholder="Ej. REF. 799860001" aria-label="Referencia o identificador" required><button class="search-submit" aria-label="Buscar">→</button></label></form></section>
-      </section>
 
-      <section class="page" id="page-trace">
-        <div class="page-heading"><div class="eyebrow">CONSULTA DETALLADA</div><h1>Trazabilidad del producto</h1><p>Consulta los eventos disponibles y revisa si faltan fechas, ubicaciones o datos del recorrido.</p></div>
-        <section class="panel query-panel"><form class="trace-search search-form"><label for="traceQuery">Referencia de producto o identificador</label><div class="search-input-wrap large-search"><span>⌕</span><input id="traceQuery" name="q" placeholder="Ingresa una referencia o identificador" required><button class="button button-primary" type="submit">Buscar trazabilidad</button></div><div class="search-hint">Ejemplos REf: <button type="button" class="inline-example" data-search="REF. 799860001">REF. 799860001</button> · <button type="button" class="inline-example" data-search="REF. O24380001">REF. O24380001</button></div></form></section>
-        <div id="traceResults" class="trace-results"><div class="empty-state"><div class="empty-icon">⌕</div><h2>Busca un producto para comenzar</h2><p>El recorrido se construye únicamente con los eventos que existan en los registros cargados.</p></div></div>
-      </section>
+        <!-- ================================================= -->
+        <!-- BARRA SUPERIOR -->
+        <!-- ================================================= -->
 
-      <section class="page" id="page-novelties">
-        <div class="page-heading"><div class="eyebrow">SEGUIMIENTO OPERATIVO</div><h1>Novedades identificadas</h1><p>Consulta los comentarios o alertas incluidos en los registros importados. La aplicación no confirma la revisión física.</p></div>
-        <div class="notice-banner warning-banner"><span class="notice-symbol">!</span><div><strong>La revisión es responsabilidad del personal operativo</strong><p>Esta vista muestra novedades registradas en el archivo. No permite marcar una novedad como verificada ni registrar cantidades físicas.</p></div></div>
-        <section class="panel"><div class="panel-heading"><div><h2>Listado de novedades</h2><p>Solo aparecen filas que contienen una novedad u observación.</p></div><span class="small-label" id="noveltyTotalLabel">0 novedades</span></div><div id="noveltiesList" class="novelties-list"><div class="table-empty">Cargando novedades…</div></div></section>
-      </section>
+        <header class="topbar">
 
-      <section class="page" id="page-sources">
-        <div class="page-heading"><div class="eyebrow">ADMINISTRACIÓN DE DATOS</div><h1>Fuentes WMS / SAP</h1><p>Importa un archivo de datos para usarlo en la sesión actual del prototipo.</p></div>
-        <div class="notice-banner"><span class="notice-symbol">i</span><div><strong>Importación manual, no integración en tiempo real</strong><p>El archivo sustituirá el conjunto de datos actual en esta instancia local. Los datos no se guardan permanentemente y se reinician al reiniciar la aplicación.</p></div></div>
-        <div class="content-grid upload-grid">
-          <section class="panel upload-panel"><div class="panel-heading"><div><h2>Importar archivo</h2><p>Formatos permitidos: CSV, XLSX y XLS. Máximo 10 MB.</p></div><span class="upload-icon">⇧</span></div>
-            <form id="uploadForm"><label class="drop-zone" for="dataFile"><span class="upload-illustration">⇧</span><strong>Selecciona un archivo para cargar</strong><span>o arrástralo hasta esta zona</span><small>CSV, XLSX o XLS · Hasta 10 MB</small><input id="dataFile" name="file" type="file" accept=".csv,.xlsx,.xls" required></label><div class="selected-file" id="selectedFile">Ningún archivo seleccionado</div><button class="button button-primary full-width" type="submit" id="uploadButton">Importar y analizar</button><div id="uploadFeedback" class="upload-feedback" role="status" aria-live="polite"></div></form>
-            <a class="download-template" href="/api/template"><span>⇩</span><span><strong>Descargar plantilla CSV</strong><small>Encabezados sugeridos para preparar la información</small></span><span class="template-arrow">→</span></a>
-          </section>
-          <section class="panel guide-panel"><div class="panel-heading"><div><h2>Campos recomendados</h2><p>El sistema intenta reconocer encabezados equivalentes en español o inglés.</p></div></div>
-            <div class="field-guide"><div class="field-code required-field">referencia</div><div><strong>Referencia del producto</strong><p>Campo obligatorio. No uses una ubicación como referencia.</p></div></div>
-            <div class="field-guide"><div class="field-code">fecha_hora</div><div><strong>Fecha y hora del evento</strong><p>Permite ordenar los eventos cronológicamente.</p></div></div>
-            <div class="field-guide"><div class="field-code">evento</div><div><strong>Evento o movimiento</strong><p>Describe la etapa registrada en el proceso.</p></div></div>
-            <div class="field-guide"><div class="field-code">ubicacion</div><div><strong>Ubicación</strong><p>Ubicación o zona del registro; puede quedar vacía si la fuente no la aporta.</p></div></div>
-            <div class="field-guide"><div class="field-code">sistema</div><div><strong>Fuente del registro</strong><p>Usa WMS o SAP si el archivo identifica esa procedencia.</p></div></div>
-            <div class="field-guide"><div class="field-code">identificador</div><div><strong>Identificador adicional</strong><p>Pedido, entrega, caja u otro ID confirmado por el área operativa.</p></div></div>
-            <div class="field-guide"><div class="field-code">novedad</div><div><strong>Novedad u observación</strong><p>Texto visible para que el responsable realice la revisión necesaria.</p></div></div>
-          </section>
-        </div>
-        <section class="panel load-status-panel"><div class="panel-heading"><div><h2>Estado de la carga actual</h2><p>Información disponible en la memoria del servidor local.</p></div><span class="status-chip" id="loadStatusChip">Demostración</span></div><div class="load-metadata"><div><span>Origen</span><strong id="loadOrigin">Datos demostrativos ficticios</strong></div><div><span>Última carga</span><strong id="lastLoad">—</strong></div><div><span>Referencias</span><strong id="loadRefCount">—</strong></div><div><span>Eventos</span><strong id="loadEventCount">—</strong></div></div></section>
-      </section>
-      <footer class="app-footer"><span>TRAZA+ · Prototipo de trazabilidad de grifería</span><span>WMS / SAP como fuentes · Sin conexión automática</span></footer>
+            <button
+                class="mobile-menu"
+                id="mobileMenu"
+                aria-label="Abrir menú"
+            >
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+
+                Operaciones
+
+                <span>/</span>
+
+                <strong id="breadcrumbCurrent">
+                    Resumen general
+                </strong>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div
+                    class="environment-pill"
+                    id="environmentStatus"
+                >
+
+                    <span class="status-dot"></span>
+
+                    <span id="environmentStatusText">
+                        Modo demostración
+                    </span>
+
+                </div>
+
+                <div class="avatar">
+                    TG
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================================= -->
+        <!-- 1. RESUMEN GENERAL -->
+        <!-- ================================================= -->
+
+        <section
+            class="page active-page"
+            id="page-dashboard"
+        >
+
+            <div class="page-heading heading-row">
+
+                <div>
+
+                    <div class="eyebrow">
+                        CENTRO DE DISTRIBUCIÓN
+                    </div>
+
+                    <h1>
+                        Resumen de trazabilidad
+                    </h1>
+
+                    <p>
+                        Consulta el comportamiento y el recorrido
+                        logístico de los productos de grifería.
+                    </p>
+
+                </div>
+
+                <button
+                    class="button button-primary"
+                    data-goto="trace"
+                >
+
+                    ⌕ Consultar producto
+
+                </button>
+
+            </div>
+
+
+            <!-- AVISO DE CONEXIÓN -->
+
+            <div
+                class="notice-banner"
+                id="demoBanner"
+            >
+
+                <span class="notice-symbol">i</span>
+
+                <div>
+
+                    <strong>
+                        Entorno de demostración
+                    </strong>
+
+                    <p>
+                        Los datos visibles son ficticios.
+                        La conexión real con WMS y SAP requiere
+                        configuración y autorización del área de TI.
+                    </p>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    data-goto="sources"
+                >
+
+                    Revisar conexiones →
+
+                </button>
+
+            </div>
+
+
+            <!-- INDICADORES -->
+
+            <div class="metric-grid">
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Referencias consultables
+                        </span>
+
+                        <span class="metric-icon icon-blue">
+                            ⌗
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="metricReferences"
+                    >
+                        —
+                    </div>
+
+                    <div class="metric-foot">
+                        Referencias diferentes registradas
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Eventos registrados
+                        </span>
+
+                        <span class="metric-icon icon-cyan">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="metricEvents"
+                    >
+                        —
+                    </div>
+
+                    <div class="metric-foot">
+                        Movimientos disponibles en las fuentes
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Novedades identificadas
+                        </span>
+
+                        <span class="metric-icon icon-amber">
+                            ⚑
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="metricNovelties"
+                    >
+                        —
+                    </div>
+
+                    <div class="metric-foot">
+                        Situaciones que requieren revisión
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Sistemas disponibles
+                        </span>
+
+                        <span class="metric-icon icon-navy">
+                            ⇄
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="metricSources"
+                    >
+                        —
+                    </div>
+
+                    <div class="metric-foot">
+                        Estado de las conexiones WMS y SAP
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- TABLA DE REFERENCIAS Y CONEXIONES -->
+
+            <div class="content-grid main-grid">
+
+
+                <!-- REFERENCIAS -->
+
+                <section class="panel recent-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>
+                                Productos recientes
+                            </h2>
+
+                            <p>
+                                Referencias disponibles para consulta.
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="link-button"
+                            data-goto="trace"
+                        >
+
+                            Ver trazabilidad →
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Referencia</th>
+
+                                    <th>Última ubicación</th>
+
+                                    <th>Estado reportado</th>
+
+                                    <th>Eventos</th>
+
+                                    <th></th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="referencesTable">
+
+                                <tr>
+
+                                    <td colspan="5" class="table-empty">
+                                        Consultando registros...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <div class="panel-foot">
+
+                        <span id="referenceTableCount">
+                            0 referencias
+                        </span>
+
+                        <span class="subtle-text">
+                            Información disponible
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CONEXIONES -->
+
+                <section class="panel source-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>
+                                Estado de conexiones
+                            </h2>
+
+                            <p>
+                                Disponibilidad de los sistemas.
+                            </p>
+
+                        </div>
+
+                        <span class="small-label">
+                            WMS / SAP
+                        </span>
+
+                    </div>
+
+
+                    <div class="source-row">
+
+                        <div class="source-brand wms-brand">
+                            W
+                        </div>
+
+                        <div class="source-description">
+
+                            <strong>
+                                WMS
+                            </strong>
+
+                            <small id="dashboardWmsMessage">
+                                Pendiente de configuración
+                            </small>
+
+                        </div>
+
+                        <span
+                            class="connection-indicator"
+                            id="dashboardWmsStatus"
+                        >
+                            Pendiente
+                        </span>
+
+                    </div>
+
+
+                    <div class="source-row">
+
+                        <div class="source-brand sap-brand">
+                            S
+                        </div>
+
+                        <div class="source-description">
+
+                            <strong>
+                                SAP
+                            </strong>
+
+                            <small id="dashboardSapMessage">
+                                Pendiente de configuración
+                            </small>
+
+                        </div>
+
+                        <span
+                            class="connection-indicator"
+                            id="dashboardSapStatus"
+                        >
+                            Pendiente
+                        </span>
+
+                    </div>
+
+
+                    <div class="source-callout">
+
+                        <span>ⓘ</span>
+
+                        <p>
+                            El estado de conexión se determina
+                            mediante la respuesta de los endpoints
+                            configurados.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="button button-outline full-width"
+                        data-goto="sources"
+                    >
+
+                        Revisar sistemas
+
+                    </button>
+
+                </section>
+
+            </div>
+
+
+            <!-- BUSCADOR RÁPIDO -->
+
+            <section class="panel bottom-search-panel">
+
+                <div class="search-copy">
+
+                    <div class="eyebrow">
+                        ACCESO RÁPIDO
+                    </div>
+
+                    <h2>
+                        ¿Dónde se encuentra tu producto?
+                    </h2>
+
+                    <p>
+                        Busca una referencia para revisar sus
+                        movimientos y la última ubicación registrada.
+                    </p>
+
+                </div>
+
+
+                <form
+                    class="quick-search search-form"
+                >
+
+                    <label class="search-input-wrap">
+
+                        <span>⌕</span>
+
+                        <input
+                            name="q"
+                            placeholder="Ej. REF. 799860001"
+                            aria-label="Buscar referencia"
+                            required
+                        >
+
+                        <button
+                            class="search-submit"
+                            aria-label="Buscar"
+                        >
+                            →
+                        </button>
+
+                    </label>
+
+                </form>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- 2. TRAZABILIDAD -->
+        <!-- ================================================= -->
+
+        <section
+            class="page"
+            id="page-trace"
+        >
+
+            <div class="page-heading">
+
+                <div class="eyebrow">
+                    SEGUIMIENTO DETALLADO
+                </div>
+
+                <h1>
+                    Trazabilidad del producto
+                </h1>
+
+                <p>
+                    Consulta el recorrido, las ubicaciones,
+                    los eventos y los estados reportados
+                    para cada referencia de grifería.
+                </p>
+
+            </div>
+
+
+            <!-- BÚSQUEDA -->
+
+            <section class="panel query-panel">
+
+                <form
+                    class="trace-search search-form"
+                >
+
+                    <label for="traceQuery">
+                        Referencia o identificador del producto
+                    </label>
+
+                    <div class="search-input-wrap large-search">
+
+                        <span>⌕</span>
+
+                        <input
+                            id="traceQuery"
+                            name="q"
+                            placeholder="Ingresa la referencia o identificador..."
+                            required
+                        >
+
+                        <button
+                            class="button button-primary"
+                            type="submit"
+                        >
+
+                            Consultar recorrido
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="search-hint">
+
+                        Ejemplos ficticios:
+
+                        <button
+                            type="button"
+                            class="inline-example"
+                            data-search="REF. 799860001"
+                        >
+                            REF. 799860001
+                        </button>
+
+                        ·
+
+                        <button
+                            type="button"
+                            class="inline-example"
+                            data-search="REF. O24380001"
+                        >
+                            REF. O24380001
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- RESULTADOS COMPLETOS -->
+
+            <div
+                id="traceResults"
+                class="trace-results"
+            >
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ⌕
+                    </div>
+
+                    <h2>
+                        Busca una referencia para comenzar
+                    </h2>
+
+                    <p>
+                        Aquí podrás consultar el recorrido registrado,
+                        los eventos logísticos y las novedades
+                        asociadas al producto.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- 3. NOVEDADES -->
+        <!-- ================================================= -->
+
+        <section
+            class="page"
+            id="page-novelties"
+        >
+
+            <div class="page-heading">
+
+                <div class="eyebrow">
+                    SEGUIMIENTO OPERATIVO
+                </div>
+
+                <h1>
+                    Novedades identificadas
+                </h1>
+
+                <p>
+                    Consulta situaciones registradas en los sistemas
+                    que requieren revisión por parte del personal
+                    responsable.
+                </p>
+
+            </div>
+
+
+            <div class="notice-banner warning-banner">
+
+                <span class="notice-symbol">!</span>
+
+                <div>
+
+                    <strong>
+                        Revisión operativa requerida
+                    </strong>
+
+                    <p>
+                        Las novedades se muestran para facilitar
+                        su seguimiento. La verificación física
+                        continúa siendo responsabilidad del
+                        personal autorizado.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTROS DE NOVEDADES -->
+
+            <section class="panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>
+                            Listado de novedades
+                        </h2>
+
+                        <p>
+                            Situaciones identificadas durante
+                            los eventos disponibles.
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="small-label"
+                        id="noveltyTotalLabel"
+                    >
+                        0 novedades
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="noveltiesList"
+                    class="novelties-list"
+                >
+
+                    <div class="table-empty">
+                        Consultando novedades...
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- 4. CONEXIONES WMS / SAP -->
+        <!-- ================================================= -->
+
+        <section
+            class="page"
+            id="page-sources"
+        >
+
+            <div class="page-heading heading-row">
+
+                <div>
+
+                    <div class="eyebrow">
+                        INTEGRACIÓN DE SISTEMAS
+                    </div>
+
+                    <h1>
+                        Conexiones WMS / SAP
+                    </h1>
+
+                    <p>
+                        Consulta el estado de comunicación
+                        entre la aplicación y los sistemas
+                        de información empresariales.
+                    </p>
+
+                </div>
+
+                <button
+                    class="button button-primary"
+                    id="checkConnections"
+                    type="button"
+                >
+
+                    ↻ Verificar conexiones
+
+                </button>
+
+            </div>
+
+
+            <!-- AVISO DE ESTADO -->
+
+            <div
+                class="notice-banner"
+                id="connectionNotice"
+            >
+
+                <span class="notice-symbol">
+                    i
+                </span>
+
+                <div>
+
+                    <strong id="connectionNoticeTitle">
+                        Configuración de conexiones pendiente
+                    </strong>
+
+                    <p id="connectionNoticeMessage">
+
+                        Para activar la comunicación se requieren
+                        los endpoints y los permisos autorizados
+                        por el área de tecnología.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUMEN DE CONEXIONES -->
+
+            <div class="metric-grid connection-metrics">
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Estado general
+                        </span>
+
+                        <span class="metric-icon icon-blue">
+                            ⇄
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="connectionOverall"
+                    >
+                        Pendiente
+                    </div>
+
+                    <div class="metric-foot">
+                        Resultado de la verificación
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Sistemas conectados
+                        </span>
+
+                        <span class="metric-icon icon-cyan">
+                            ✓
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="connectedSystems"
+                    >
+                        0 / 2
+                    </div>
+
+                    <div class="metric-foot">
+                        WMS y SAP
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Últimos eventos recibidos
+                        </span>
+
+                        <span class="metric-icon icon-navy">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number"
+                        id="connectionEvents"
+                    >
+                        0
+                    </div>
+
+                    <div class="metric-foot">
+                        Resultado de consultas a los sistemas
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span>
+                            Última sincronización
+                        </span>
+
+                        <span class="metric-icon icon-amber">
+                            ◷
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="metric-number sync-date"
+                        id="lastSynchronization"
+                    >
+                        Sin datos
+                    </div>
+
+                    <div class="metric-foot">
+                        Fecha de la última consulta exitosa
+                    </div>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- TARJETAS DE CONEXIÓN -->
+
+            <div class="content-grid connection-grid">
+
+
+                <!-- WMS -->
+
+                <section class="panel connection-card">
+
+                    <div class="panel-heading">
+
+                        <div class="connection-brand wms-brand large-brand">
+                            W
+                        </div>
+
+                        <div class="connection-title">
+
+                            <h2>
+                                WMS
+                            </h2>
+
+                            <p>
+                                Sistema de gestión de almacenes
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="connection-indicator"
+                            id="wmsStatus"
+                        >
+                            Pendiente
+                        </span>
+
+                    </div>
+
+
+                    <div class="connection-details">
+
+                        <div>
+
+                            <span>
+                                Estado de conexión
+                            </span>
+
+                            <strong id="wmsMessage">
+                                Pendiente de configuración
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Endpoint de estado
+                            </span>
+
+                            <strong id="wmsStatusEndpoint">
+                                No configurado
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Endpoint de eventos
+                            </span>
+
+                            <strong id="wmsEventsEndpoint">
+                                No configurado
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última verificación
+                            </span>
+
+                            <strong id="wmsLastCheck">
+                                Sin verificar
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Tiempo de respuesta
+                            </span>
+
+                            <strong id="wmsLatency">
+                                Sin medición
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última consulta de eventos
+                            </span>
+
+                            <strong id="wmsLastQuery">
+                                Sin consultas
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Eventos recibidos
+                            </span>
+
+                            <strong id="wmsReceived">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="connection-footer">
+
+                        <span class="connection-description">
+                            Fuente de información logística
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- SAP -->
+
+                <section class="panel connection-card">
+
+                    <div class="panel-heading">
+
+                        <div class="connection-brand sap-brand large-brand">
+                            S
+                        </div>
+
+                        <div class="connection-title">
+
+                            <h2>
+                                SAP
+                            </h2>
+
+                            <p>
+                                Sistema de información empresarial
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="connection-indicator"
+                            id="sapStatus"
+                        >
+                            Pendiente
+                        </span>
+
+                    </div>
+
+
+                    <div class="connection-details">
+
+                        <div>
+
+                            <span>
+                                Estado de conexión
+                            </span>
+
+                            <strong id="sapMessage">
+                                Pendiente de configuración
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Endpoint de estado
+                            </span>
+
+                            <strong id="sapStatusEndpoint">
+                                No configurado
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Endpoint de eventos
+                            </span>
+
+                            <strong id="sapEventsEndpoint">
+                                No configurado
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última verificación
+                            </span>
+
+                            <strong id="sapLastCheck">
+                                Sin verificar
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Tiempo de respuesta
+                            </span>
+
+                            <strong id="sapLatency">
+                                Sin medición
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última consulta de eventos
+                            </span>
+
+                            <strong id="sapLastQuery">
+                                Sin consultas
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Eventos recibidos
+                            </span>
+
+                            <strong id="sapReceived">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="connection-footer">
+
+                        <span class="connection-description">
+                            Fuente complementaria de información
+                        </span>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+
+            <!-- SINCRONIZACIÓN -->
+
+            <section class="panel sync-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>
+                            Consulta de información
+                        </h2>
+
+                        <p>
+                            Solicita los eventos disponibles en los
+                            sistemas que tengan conexión configurada.
+                        </p>
+
+                    </div>
+
+                    <span class="small-label">
+                        Consulta manual
+                    </span>
+
+                </div>
+
+
+                <div class="sync-content">
+
+                    <div class="sync-info">
+
+                        <div class="sync-icon">
+                            ⇄
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Actualización de registros
+                            </strong>
+
+                            <p>
+                                La aplicación consultará los endpoints
+                                de eventos de WMS y SAP y organizará
+                                la información recibida para las
+                                consultas de trazabilidad.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="button button-primary"
+                        id="syncConnections"
+                        type="button"
+                    >
+
+                        ↻ Consultar sistemas
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="syncFeedback"
+                    class="sync-feedback"
+                    role="status"
+                    aria-live="polite"
+                >
+
+                    Aún no se ha ejecutado una consulta a los sistemas.
+
+                </div>
+
+
+                <div
+                    id="syncResults"
+                    class="sync-results"
+                >
+
+                </div>
+
+            </section>
+
+
+
+            <!-- INFORMACIÓN TÉCNICA -->
+
+            <section class="panel technical-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>
+                            Información de integración
+                        </h2>
+
+                        <p>
+                            Elementos técnicos requeridos para habilitar
+                            la comunicación entre sistemas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="technical-grid">
+
+
+                    <div class="technical-item">
+
+                        <span class="technical-icon">
+                            ◈
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Endpoints autorizados
+                            </strong>
+
+                            <p>
+                                Direcciones de los servicios de consulta
+                                proporcionadas por el área de tecnología.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="technical-item">
+
+                        <span class="technical-icon">
+                            ◉
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Autenticación
+                            </strong>
+
+                            <p>
+                                Método de autenticación y permisos
+                                necesarios para consultar los sistemas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="technical-item">
+
+                        <span class="technical-icon">
+                            ▤
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Estructura de datos
+                            </strong>
+
+                            <p>
+                                Campos de referencia, eventos, fechas,
+                                ubicaciones e identificadores.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="technical-item">
+
+                        <span class="technical-icon">
+                            ↻
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Frecuencia de consulta
+                            </strong>
+
+                            <p>
+                                Definición de la periodicidad permitida
+                                para consultar los servicios.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- PIE DE PÁGINA -->
+        <!-- ================================================= -->
+
+        <footer class="app-footer">
+
+            <span>
+                TRAZA+ · Sistema de trazabilidad de productos de grifería
+            </span>
+
+            <span>
+                WMS / SAP · Consulta de información logística
+            </span>
+
+        </footer>
+
+
     </main>
-  </div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- MENSAJES DEL SISTEMA -->
+<!-- ================================================= -->
+
+<div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+>
+</div>
+
+
 </body>
+
 </html>
